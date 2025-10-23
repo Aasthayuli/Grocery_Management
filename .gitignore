@@ -1,0 +1,17 @@
+
+# Node modules
+frontend/node_modules/
+backend/__pycache__/
+
+# Python virtual env (agar ho future me)
+venv/
+env/
+
+# IDE files
+.idea/
+
+# Build folders
+frontend/dist/
+
+# DB files (agar future me sqlite wagaira)
+*.db
