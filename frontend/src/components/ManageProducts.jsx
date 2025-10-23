@@ -29,7 +29,6 @@ const ManageProducts = () => {
           stock: p.stock,
           is_active: p.is_active,
         }));
-        // .filter((p) => p.is_active === 1);
         setProducts(normalized);
       })
       .catch((err) => console.log(err));
@@ -40,7 +39,12 @@ const ManageProducts = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "stock" || name === "price" ? parseInt(value) : value,
+      [name]:
+        name === "stock" || name === "price"
+          ? value === ""
+            ? 0
+            : parseInt(value)
+          : value,
     }));
   };
 
@@ -50,7 +54,6 @@ const ManageProducts = () => {
       alert("Please fill in all fields");
       return;
     }
-
     if (formData.id === 0) {
       fetch("http://localhost:5000/addProduct", {
         method: "POST",
@@ -59,10 +62,18 @@ const ManageProducts = () => {
       })
         .then((res) => res.json())
         .then((data) => {
-          setProducts([...products, { ...formData, id: data.product_id }]);
-          setFormData({ id: 0, name: "", unit: "", price: "" });
-          setShowModal(false);
-          saveMsg(data.msg);
+          console.log(data);
+          if (data.exists) {
+            setShowModal(false);
+            saveMsg(data.msg);
+            setShowMsg(true);
+            return;
+          } else {
+            setProducts([...products, { ...formData, id: data.product_id }]);
+            setFormData({ id: 0, name: "", unit: "", price: "" });
+            setShowModal(false);
+            saveMsg(data.msg);
+          }
         })
         .catch((err) => console.log(err));
     } else {
@@ -73,15 +84,16 @@ const ManageProducts = () => {
       })
         .then((res) => res.json())
         .then((data) => {
+          console.log(data);
           setProducts(
             products.map((p) => (p.id === formData.id ? formData : p))
           );
           setShowModal(false);
           saveMsg(data.msg);
-          setShowMsg(true);
         })
         .catch((err) => console.log(err));
     }
+    setShowMsg(true);
   };
 
   const handleDelete = (id) => {
@@ -90,15 +102,11 @@ const ManageProducts = () => {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         saveMsg(data.msg);
         setShowMsg(true);
         setProducts(products.filter((p) => p.id !== id));
       });
-  };
-
-  const handleEdit = (product) => {
-    setFormData(product);
-    setShowModal(true);
   };
 
   return (
@@ -129,7 +137,17 @@ const ManageProducts = () => {
           )}
           <button
             className="btn btn-primary btn-sm"
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+              setFormData({
+                id: 0,
+                name: "",
+                unit: "",
+                price: "",
+                stock: "",
+                is_active: 1,
+              });
+              setShowModal(true);
+            }}
           >
             Add New Product
           </button>
@@ -148,7 +166,7 @@ const ManageProducts = () => {
           </thead>
           <tbody>
             {products.length === 0 ? (
-              <tr>
+              <tr key="no-products">
                 <td colSpan="4" className="text-center text-muted">
                   No products added yet
                 </td>
@@ -163,7 +181,10 @@ const ManageProducts = () => {
                   <td className="text-center">
                     <button
                       className="btn btn-info btn-sm me-2"
-                      onClick={() => handleEdit(product)}
+                      onClick={() => {
+                        setFormData(product);
+                        setShowModal(true);
+                      }}
                     >
                       Edit
                     </button>
@@ -260,9 +281,7 @@ const ManageProducts = () => {
                   <button
                     type="button"
                     className="btn btn-primary"
-                    onClick={() => {
-                      handleSave(), setShowMsg(true);
-                    }}
+                    onClick={handleSave}
                   >
                     Save
                   </button>
