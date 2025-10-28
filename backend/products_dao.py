@@ -51,8 +51,6 @@ def insert_new_product(connection, product):
         connection.commit()
         return {"status": "success", "product_id": cursor.lastrowid, "msg": "Product added successfully", "exists": False}
 
-
-
 def update_product(connection, product,product_id):
     cursor = connection.cursor()
     query = "update products set product_name = %s, uom_id = %s, price_per_unit = %s, stock = %s where product_id = %s;"
@@ -68,6 +66,54 @@ def delete_row(connection, product_id):
     cursor.execute(query, id)
     connection.commit()
     return {"status":"success","id":product_id, "msg":"Product Deleted Successfully"}
+
+def get_orders(connection):
+    cursor = connection.cursor()
+    query = "select * from orders;"
+    cursor.execute(query)
+    response = []
+    for(order_id, customer_name, total, datetime) in cursor:
+        response.append(
+            {
+                'order_id': order_id,
+                'customer_name': customer_name,
+                'total': total,
+                'datetime': datetime
+            }
+        )
+    return response
+
+def save_order(connection, order):
+    cursor = connection.cursor()
+    query = "insert into orders(customer_name, total, datetime) values(%s, %s, now());"
+    data = (order['customer_name'], order['total'])
+    cursor.execute(query, data)
+    order_id = cursor.lastrowid
+    connection.commit()
+    return {"status":"success","order_id":order_id,"msg":"order added Successfully"}
+
+def get_order_details(connection):
+    cursor = connection.cursor()
+    query = "select * from order_details;"
+    cursor.execute(query)
+    response = []
+    for(order_id, product_id, quantity,total_price, status) in cursor:
+        response.append({
+         'order_id': order_id,
+         'product_id': product_id,
+         'quantity': quantity,
+         'total_price': total_price,
+         'status': status   
+        })
+    return response
+
+def save_order_details(connection, order_details):
+    cursor = connection.cursor()
+    query = "insert into order_details(order_id, product_id, quantity,total_price, status) values(%s, %s, %s, %s, %s);"
+    data = (order_details['order_id'], order_details['product_id'], order_details['quantity'], order_details['total_price'], order_details['status'])
+    cursor.execute(query, data)
+    connection.commit()
+    return {"status":"success","msg":"order details added Successfully"}
 
 if __name__ == '__main__':
     connection = get_sql_connection()

@@ -122,7 +122,10 @@ const ManageProducts = () => {
       </div>
 
       {/* Manage Products Section */}
-      <div className="card shadow-sm p-4 container ">
+      <div
+        className="card shadow-sm p-4 container "
+        style={{ backgroundColor: "#f8f9fa" }}
+      >
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h3 className="mb-0">Manage Products</h3>
           {showMsg && (
@@ -148,11 +151,11 @@ const ManageProducts = () => {
               });
               setShowModal(true);
             }}
+            style={{ backgroundColor: "#266150", borderColor: "#266150" }}
           >
             Add New Product
           </button>
         </div>
-
         {/* Product Table */}
         <table className="table table-bordered align-middle">
           <thead className="table-light">
@@ -185,12 +188,14 @@ const ManageProducts = () => {
                         setFormData(product);
                         setShowModal(true);
                       }}
+                      style={{ backgroundColor: "green" }}
                     >
                       Edit
                     </button>
                     <button
                       className="btn btn-danger btn-sm"
                       onClick={() => handleDelete(product.id)}
+                      style={{ backgroundColor: "red" }}
                     >
                       Delete
                     </button>

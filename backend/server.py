@@ -15,25 +15,6 @@ def get_products():
     response = jsonify(products)
     return response
 
-
-# @app.route('/addProduct', methods=['POST'])
-# def add_product():
-#     product = request.get_json()
-#     result = products_dao.insert_new_product(connection, {
-#         'product_name':product['name'], 
-#         'uom_id':product['unit'], 
-#         'price_per_unit':product['price'],
-#         'stock':product['stock'],
-#         'is_active':product['is_active'],
-#         'product_id' : product.get('product_id', None) #for update check
-#     })
-#     if(result['status'] == "fail"):
-#         result['exists'] = True
-#     else:
-#         result['exists'] = False
-
-#     response = jsonify(result)
-#     return response
 @app.route('/addProduct', methods=['POST'])
 def add_product():
     try:
@@ -81,7 +62,47 @@ def update_product(product_id):
         print("Error in updating Product: ", e)
         return jsonify({"Error":str(e)}), 500
 
+@app.route('/getOrders', methods=['GET'])
+def get_orders():
+    orders = products_dao.get_orders(connection)
+    response = jsonify(orders)
+    return response
 
+order_id = 0
+@app.route('/saveOrder', methods=['POST'])
+def save_order():
+    try:
+        order = request.get_json()
+        result = products_dao.save_order(connection, order)
+        response = jsonify(result)
+        global order_id
+        order_id = result['order_id']
+        return response
+    except Exception as e:
+        print("Error in adding Order: ", e)
+        return jsonify({"Error":str(e)}), 500
+    
+@app.route('/getOrderDetails', methods=['GET'])
+def add_order_details():
+    try:
+        result = products_dao.get_order_details(connection)
+        response = jsonify(result)
+        return response
+    except Exception as e:
+        print("Error in getting Order Details: ", e)
+        return jsonify({"Error":str(e)}), 500
+
+@app.route('/saveOrderDetails', methods=['POST'])
+def save_order_details():
+    try:
+        order_details = request.get_json()
+        result = products_dao.save_order_details(connection, order_details)
+        response = jsonify(result)
+        return response
+    except Exception as e:
+        print("Error in adding Order Details: ", e)
+        return jsonify({"Error":str(e)}), 500
+    
 if __name__ == "__main__":
-    print("Starting Python Flask server for Grocery store Management System")
+    print("Starting Python Flask server for Grocery Store Management System")
     app.run(port=5000)

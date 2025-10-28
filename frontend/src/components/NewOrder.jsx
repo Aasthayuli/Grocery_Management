@@ -1,15 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const NewOrder = () => {
   const [customerName, setCustomerName] = useState("");
   const [items, setItems] = useState([]);
-  const [products] = useState([
-    { id: 1, name: "Rice", price: 50 },
-    { id: 2, name: "Wheat", price: 45 },
-    { id: 3, name: "Milk", price: 60 },
-    { id: 4, name: "Sugar", price: 40 },
-  ]);
+  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    fetch("http://localhost:5000/getProducts")
+      .then((res) => res.json())
+      .then((data) => {
+        const normalized = data.map((p) => ({
+          id: p.product_id,
+          name: p.product_name,
+          unit: p.uom_id,
+          price: p.price_per_unit,
+          stock: p.stock,
+          is_active: p.is_active,
+        }));
+        setProducts(normalized);
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   const handleAddMore = () => {
     setItems([
@@ -52,11 +63,35 @@ const NewOrder = () => {
       return;
     }
 
-    alert(
-      `Order saved!\nCustomer: ${customerName}\nTotal: ₹${grandTotal.toFixed(
-        2
-      )}`
-    );
+    fetch("http://localhost:5000/saveOrder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customer_name: customerName,
+        items,
+        total: grandTotal,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        fetch("http://localhost:5000/saveOrderDetails", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            order_id: data.order_id,
+            product_id: items.map((item) => item.productId),
+            quantity: items.map((item) => item.qty),
+            total_price: grandTotal,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data2) => {
+            console.log(data2);
+          })
+          .catch((err2) => console.log(err2));
+      })
+      .catch((err) => console.log(err));
 
     setCustomerName("");
     setItems([]);

@@ -1,6 +1,16 @@
 import { Link } from "react-router-dom";
-
+import { useState, useEffect } from "react";
 const Home = () => {
+  const [order, setorder] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/getOrders")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setorder(data);
+      });
+  }, []);
   return (
     <div className="">
       {/* Header Navigation */}
@@ -26,7 +36,7 @@ const Home = () => {
         <div className="body content rows scroll-y">
           <form className="form-horizontal" action="">
             <div className="box-info full" id="taskFormContainer">
-              <h2>Grocery Store Management System</h2>
+              <h2>Grocery Store Management</h2>
 
               <div className="row mb-4">
                 <div className="d-flex gap-2">
@@ -42,6 +52,12 @@ const Home = () => {
                   >
                     Manage Products
                   </Link>
+                  <Link
+                    to="/order-details"
+                    className="btn btn-sm btn-primary pull-right"
+                  >
+                    Order Details
+                  </Link>
                 </div>
 
                 <table className="table table-bordered mt-3">
@@ -53,7 +69,24 @@ const Home = () => {
                       <th>Total Cost</th>
                     </tr>
                   </thead>
-                  <tbody></tbody>
+                  <tbody>
+                    {order.length === 0 ? (
+                      <tr key="no-order">
+                        <td colSpan="4" className="text-center text-muted">
+                          No products added yet
+                        </td>
+                      </tr>
+                    ) : (
+                      order.map((order) => (
+                        <tr key={order.order_id}>
+                          <td>{order.datetime}</td>
+                          <td>ORD-{order.order_id}</td>
+                          <td>{order.customer_name}</td>
+                          <td>{order.total}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
                 </table>
               </div>
             </div>

@@ -1,13 +1,73 @@
 /* index.css */
-body {
-  margin: 0;
-  font-family: "Poppins", sans-serif;
-  background-color: #f8f9fa;
-}
-
 .bg-mall {
   background: url("./assets/mall.jpg") no-repeat center center fixed;
   background-size: cover;
   min-height: 100vh;
   width: 100%;
+}
+/* Main background */
+body,
+.container {
+  font-family: "Poppins", sans-serif;
+  background-color: #f9fafb !important;
+}
+/* Card style */
+.card {
+  background: #ffffff !important;
+  border-radius: 16px !important;
+  box-shadow: 0 5px 30px #00000014 !important;
+}
+
+/* Table header */
+.table-light th {
+  background-color: #e8f5e9 !important;
+  color: #2e7d32 !important;
+}
+
+/* Add New Product button */
+.btn-primary {
+  background: linear-gradient(90deg, #27ae60 50%, #48b3af 100%) !important;
+  border: none !important;
+}
+
+.btn-primary:hover {
+  background: #229954 !important;
+  color: #fff !important;
+}
+
+/* Edit/Delete buttons */
+.btn-info {
+  background: #27ae60 !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.btn-info:hover {
+  background: #229954 !important;
+}
+
+.btn-danger {
+  background: #e74c3c !important;
+  border: none !important;
+}
+
+.btn-danger:hover {
+  background: #c0392b !important;
+}
+
+.alert-success {
+  background: #d4edda !important;
+  color: #256029 !important;
+}
+
+/* Modal look */
+.modal-content {
+  border-radius: 16px !important;
+}
+
+/* Form focus style */
+.form-control:focus,
+.form-select:focus {
+  border-color: #27ae60 !important;
+  box-shadow: 0 0 4px #27ae6033 !important;
 }
